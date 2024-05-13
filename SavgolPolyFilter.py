@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter, find_peaks
 import pandas as pd
 import os
+from scipy.optimize import curve_fit
 
 plt.rcParams.update({"font.size":20})
 
@@ -61,7 +62,7 @@ for file in files:
     BPMs.append(len(peaks)*(4500/len(x)))
     ibi = []
     
-    # use given lines of code to find metrics
+    # use given lines to find metrics
     for i in range(len(peaks)-1):
         ibi.append((df.time[peaks[i+1]] - df.time[peaks[i]])*1000)
     mRSSDs.append(np.sqrt(np.nanmean(np.power(np.diff(ibi), 2))))
@@ -75,3 +76,18 @@ for i in range(10):
     print(f"SDNN = {SDNNs[i]}\n")
     print(f"pNN50 = {pNN50s[i]}\n\n\n")
     
+def linear(x,m,c):
+    return m*x + c
+
+t = peaks * 60/4500
+y = np.arange(0,len(peaks))
+popt, pcov = curve_fit(linear,t,y)
+m, c = popt
+
+plt.plot(t,y,'x',color='black',markersize=8,ls='None',label = 'Peaks')
+plt.plot(t,linear(t,m,c),'r-',label='Fitted line')
+plt.legend()
+plt.xlabel("Time / s")
+plt.ylabel ("Peak number")
+
+plt.show()
