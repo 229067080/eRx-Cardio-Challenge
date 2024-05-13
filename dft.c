@@ -7,7 +7,7 @@
 
 #define DFT -1      //Sign in exponent; determines if
 #define IDFT 1      //transform is forward or inverse
-#define dN 4479     //length of data
+#define DN 4479     //length of data
 #define T 60.0      //time period
 #define MIN 50      //freq range for bandpass filter
 #define MAX 300
@@ -96,19 +96,19 @@ int main() {
 		}
 
 		//Reading data into an array.
-		cnum inputArray[dN];
+		cnum inputArray[DN];
 
 		int c;
 		while ((c = fgetc(f1)) != EOF && c != '\n');
 
-		for (int i = 0; i < dN; i++) {
+		for (int i = 0; i < DN; i++) {
 			fscanf(f1, "%*lf,%*lf,%lf,%*lf,%*lf", &inputArray[i].re);
 			inputArray[i].im = 0;
 		}
 
 		
 		//DFT data.
-		cnum *dftArray = transform(DFT, inputArray, dN);
+		cnum *dftArray = transform(DFT, inputArray, DN);
 
 		//filter
 		
@@ -117,7 +117,7 @@ int main() {
 			dftArray[i].im = 0;
 		}
 
-		for (int i=MAX;i<dN;i++) {
+		for (int i=MAX;i<DN;i++) {
 			dftArray[i].re = 0;
 			dftArray[i].im = 0;
 		}
@@ -136,7 +136,7 @@ int main() {
 			}
 		}
 
-		cnum *outputArray = transform(IDFT, dftArray, dN);
+		cnum *outputArray = transform(IDFT, dftArray, DN);
 
 		char o_filename[50];
 		strcpy(o_filename, filenames[q]);
@@ -151,8 +151,8 @@ int main() {
 		}
 
 		//Writing IDFT-ed data to file.
-		for (int i=0;i<dN;i++) {
-			double t = i * T/dN;
+		for (int i=0;i<DN;i++) {
+			double t = i * T/DN;
 			writefile(f2, t, outputArray[i]);
 		}
 		
