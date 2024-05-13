@@ -23,7 +23,7 @@ for file in files:
     df = pd.read_csv(f"{folder}/{file}")
     x = df.time
     fig, axs = plt.subplots(2,2,figsize=(18,18))
-    rgb_peaks = []
+    rb_peaks = []
     
     for i,colour in enumerate(['Red','Blue']):
     
@@ -36,7 +36,7 @@ for file in files:
         
         # find peak indices for red and blue signals
         peaks, _ = find_peaks(bdr_data, height = 0, distance = 35)
-        rgb_peaks.append(peaks)
+        rb_peaks.append(peaks)
         
         # plot data
         axs[i][0].plot(x, bdr_data, color=colour,label='Filtered data')
@@ -53,15 +53,15 @@ for file in files:
     plt.show()
 
     # pad red/blue peaks list so a mean can be calculated
-    high = max(len(ls) for ls in rgb_peaks)    
-    rgb_peaks_padded = [list(ls) + ([np.nan] * (high - len(ls))) for ls in rgb_peaks]
-    peaks = np.round(np.nanmean(rgb_peaks_padded, axis=0))
+    high = max(len(ls) for ls in rb_peaks)    
+    rb_peaks_padded = [list(ls) + ([np.nan] * (high - len(ls))) for ls in rb_peaks]
+    peaks = np.round(np.nanmean(rb_peaks_padded, axis=0))
     
     # alter number of peaks by the fraction of missing data
     BPMs.append(len(peaks)*(4500/len(x)))
     ibi = []
     
-    # use given lines to find metrics
+    # use given lines of code to find metrics
     for i in range(len(peaks)-1):
         ibi.append((df.time[peaks[i+1]] - df.time[peaks[i]])*1000)
     mRSSDs.append(np.sqrt(np.nanmean(np.power(np.diff(ibi), 2))))
